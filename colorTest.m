@@ -430,6 +430,8 @@ function colorName = detectColor(brick, sensorPort)
         colorName = 'green';
     elseif B > 50
         colorName = 'blue';
+    elseif R > 50
+        colorName = 'red';
     else
         colorName = 'other';
     end
@@ -438,11 +440,45 @@ end
 
 %forward(brick, ultrasoundPort, 100, wallLength, gyroPort);
 
-main(brick, ultrasoundPort, gyroPort, wallArray, currentGrid, wallLength, hasGreen);
+%main(brick, ultrasoundPort, gyroPort, wallArray, currentGrid, wallLength, hasGreen);
 
 %left(brick, gyroPort);
 
 %radar(brick, ultrasoundPort, gyroPort, wallArray, currentGrid, wallLength)
+
+cb = true;
+cg = true;
+while true
+    brick.MoveMotor('AB', -50);
+    
+    color = detectColor(brick, 3);
+
+    if color == "red"
+        brick.StopAllMotors();
+        pause(1);
+
+    elseif color == "blue" && cb
+        brick.StopAllMotors();
+        brick.beep();
+        pause(.1);
+        brick.beep();
+        pause(.1);
+
+        cb = false;
+    elseif color == "green" && cg
+        brick.StopAllMotors();
+        brick.beep();
+        pause(.1);
+        brick.beep();
+        pause(.1);
+        brick.beep();
+        pause(.1);
+
+        cg = false;
+    end
+
+    pause(.05);
+end
 
 StopAllMotors(brick);
 DisconnectBrick(brick);
